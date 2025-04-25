@@ -1,0 +1,303 @@
+Introduction:
+
+In my files hello.h and hello.cpp, there are 7 functions.
+
+void print(const string& instruction) prints the current status of the instruction, registers, flags, and memory. After printing the instruction from input.txt, it then goes through and prints all the registers in hex, the condition flags, and the memory array
+void setNZCV(int result, bool carry, bool overflow) sets the NZCV status flags based on the results of the operation and whether it carries or overflows. 
+bool checkCond(const string& cond) executes conditional instructions from the input file, returning NZCV depending on which condition is called.
+int parseValue(const string& val) parses values, either returning then as an immediate value or as a register to be used in the instruction operations.
+int findLabelLine(const string& label) finds a label's line number and looks up the line number associated with a label. This is used by branch instructions. 
+int executeInstructions(const string& line, int currentLine) executes instructions from input file. It checks for spaces to ensure it’s a valid instruction, then reads the instructions and then chooses from the different opcodes (MOV, MNV, ADD, SUB, AND, OR, EOR, LSL, LSR, ADDS, SUBS, ANDS, EORS, CMP, ORRS, MVNEQ, MOVGT, LDR, STR) or calls an error if the instruction does not exist. Then it calls print to print the changes made from the instructions. 
+void processInstructions(const string& filename) loads and processes instructions from the file. It reads the instructions from the input file, stores them in an array, identifies the labels and their line numbers, and then calls executeInstructions to execute each instruction. 
+
+My main.cpp file calls process instructions to read “input.txt”. 
+
+To run this code successfully, ensure there is a file called input.txt with the format OPERATION and then having the proper ALU setup. An example of properly formatted lines are MOV R2,#0x20 or CMP R7, R2. Then, using the makefile, compile the code and run the executable. 
+
+
+Operations:
+
+ADD (Addition) - Adds two numbers.
+ADDS (Addition) - Adds two numbers and updates NZCV flags.
+SUB (Subtraction) - Subtracts the second number from the first.
+SUBS (Subtraction) - Subtracts the second number from the first and updates NZCV flags.
+
+AND - Performs a bitwise AND operation.
+ANDS - Performs a bitwise AND operation and updates NZCV flags.
+OR - Performs a bitwise OR operation.
+ORS - Performs a bitwise OR operation and updates NZCV flags.
+XOR - Performs a bitwise XOR operation.
+XORS - Performs a bitwise XOR operation and updates NZCV flags.
+NOT - Performs a bitwise NOT operation.
+
+MOV - Copies a value into a register.
+MVM - Movs the bitwise NOT of a value into a register.
+CMP - Compares two registers and sets the Z flag if they’re equal.
+
+LSL (Logical shift left) - Shifts bits left to multiply the number by the power to 2. 
+LSR (Logical shift right) - Shifts bits right to divide the number by the power of 2. 
+
+LDR - Loads a value from memory into registers.
+STR - Stores a value from registers into memory.
+
+EQ (Equal to) - Checks if the Z flag is true, and if it is it executes.
+NE (Not equal to) - Checks if the Z flag is false, and if it is it executes. 
+GT (Greater than - Checks if the Z flag is false and the N flag is equal to the V flag, and if it is it executes. 
+LT (Less than) - Checks if N flag is not equal to the V flag, and if it is it executes. 
+GE (Greater than or equal to) - Checks if the N flag is not equal to the V flag, and if it is it executes. 
+LE (Less than or equal to) - Checks if the zero flag is true or if the N flag is not equal to the V flag, and if it is it executes. 
+
+
+Outputs:
+
+MOV R0,#0x14
+Register array: 
+R0=0x14 R1=0x0 R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0000
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Moves 0x14 into R0
+
+MOV R1,#0xA
+Register array: 
+R0=0x14 R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0000
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Moves 0xA into R1
+
+CMP R0, R1
+Register array: 
+R0=0x14 R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R0 with R1, setting NZCV flags
+
+ADDGT R2, R0, R1
+Register array: 
+R0=0x14 R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+ADD R0 and R1 and stores the result in R2 only if GT condition is met
+
+ADDEQ R3, R0, R1
+Register array: 
+R0=0x14 R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+ADD R0 and R1 and stores the result in R3 only if the EQ condition is met
+
+SUBLT R4, R0, R1
+Register array: 
+R0=0x14 R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+SUB R1 from R0 and stores the result in R4 only if the LT condition is met
+
+ADDS R0,R1,R2
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+ADD R1 and R2 and stores the result in R0, setting NZCV flags
+
+CMP R2, #50
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R2 with 50, setting NZCV flags
+
+ANDGT R3, R2, #1
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+AND between R2 and 1 and stores the result in R3 only if the GT condition is met
+
+ORREQ R4, R2, #2
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+OR between R2 and 2 and stores the result in R4 only if the EQ condition is met
+
+EORLT R5, R2, #3
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0x0 R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+XOR between R2 and 3 and stores the result in R5 only if the LT condition is met
+
+ORRS R3,R2,#15
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+OR between R2 and 15 stores the result in R3, setting NZCV flags
+
+CMP R5, #0x1D
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R5 with 0x1D, setting NZCV flags
+
+LSRGE R7, R5, #2
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Logical shift right on R5 by 2 positions and stores the result in R7 if the GE condition is met
+
+LSLNE R8, R5, #3
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Logical shift left on R5 by 3 positions and stores the result in R8 if the NE condition is met
+
+CMP R8, R9
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R8 with R9, setting NZCV flags
+
+MOVGT R10, R8
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0x0
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Moves R8 to R10 if the GT condition is true
+
+MVNEQ R11, R8
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x0 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Moves the XO of R8 to R11 if the NE condition is met
+
+MOV R6,#0x104
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Moves 0x104 to R6
+
+CMP R7, R2
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R7 with R2, setting NZCV flags
+
+LDRGT R3, [R6]
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Loads R6 into R3 if the GT condition is met
+
+STRNE R3, [R6]
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Stores R3 into R6 if the NE condition is met
+
+CMP R2, R7
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R2 with R7, setting NZCV flags
+
+LDRGT R9, [R6]
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Loads R6 into R9 if the GT condition is met
+
+STRNE R3, [R6]
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Stores R3 into R6 if the NE condition is met
+
+CMP R7, #7
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+Compares R7 with 7, setting NZCV flags
+
+BEQ SKIP 
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+If the equal condition is true, branch to label SKIP
+
+ADD R2, R2, #1 
+Register array: 
+R0=0xA R1=0xA R2=0x0 R3=0xF R4=0x0 R5=0x0
+R6=0x104 R7=0x0 R8=0x0 R9=0x0 RA=0x0 RB=0xFFFFFFFF
+NZCV: 0110
+Memory array:
+0x0,0x0,0x0,0x0,0x0
+ADD 1 to R2 and stores in R2
