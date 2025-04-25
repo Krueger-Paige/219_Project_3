@@ -162,7 +162,7 @@ int executeInstructions(const string& line, int currentLine){
     else if(opcode == "ORR"){
         registers[d] = n | m;
     }
-    else if(opcode == "XOR"){
+    else if(opcode == "EOR"){
         registers[d] = n ^ m;
     }
     else if(opcode == "LSL"){
@@ -192,7 +192,7 @@ int executeInstructions(const string& line, int currentLine){
         registers[d] = result;
         setNZCV(result);
     }
-    else if(opcode == "XORS"){
+    else if(opcode == "EORS"){
         result = n ^ m;
         registers[d] = result;
         setNZCV(result);
